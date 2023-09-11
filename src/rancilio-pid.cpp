@@ -251,7 +251,7 @@ SysPara<uint8_t> sysParaUseBDPID(&useBDPID, 0, 1, STO_ITEM_USE_BD_PID);
 int relayON, relayOFF;           // used for relay trigger type. Do not change!
 boolean coldstart = true;        // true = Rancilio started for first time
 boolean emergencyStop = false;   // Emergency stop if temperature is too high
-double EmergencyStopTemp = 120;  // Temp EmergencyStopTemp
+double EmergencyStopTemp = 150;  // Temp EmergencyStopTemp
 float inX = 0, inY = 0, inOld = 0, inSum = 0; // used for filterPressureValue()
 int signalBars = 0;              // used for getSignalStrength()
 boolean brewDetected = 0;
@@ -640,7 +640,7 @@ void refreshTemp() {
         #if ((PINTEMPSENSOR != 16 && defined(ESP8266)) || defined(ESP32))
             temperature = Sensor2.getTemp();
         #endif
-       
+
     #endif
       // temperature = 94;
             if (machineState != kSteam) {
@@ -1111,9 +1111,9 @@ void checkSteamON() {
 
 void setEmergencyStopTemp() {
     if (machineState == kSteam || machineState == kCoolDown) {
-        if (EmergencyStopTemp != 145) EmergencyStopTemp = 145;
+        if (EmergencyStopTemp != 150) EmergencyStopTemp = 150;
     } else {
-        if (EmergencyStopTemp != 120) EmergencyStopTemp = 120;
+        if (EmergencyStopTemp != 150) EmergencyStopTemp = 150;
     }
 }
 
@@ -1198,7 +1198,7 @@ void handleMachineState() {
 
                         break;
                     }
-                    
+
                     // 10 sec temperature above BrewSetPoint, no set new state
                     if (machinestatecoldmillis + 10 * 1000 < millis()) {
                         machineState = kBelowSetPoint;
@@ -1776,7 +1776,7 @@ void setup() {
     digitalWrite(PINVALVE, relayOFF);
     digitalWrite(PINPUMP, relayOFF);
     digitalWrite(PINHEATER, LOW);
-    
+
     // IF POWERSWITCH is connected
     if (POWERSWITCHTYPE > 0) {
         pinMode(PINPOWERSWITCH, INPUT);
@@ -1869,8 +1869,8 @@ void setup() {
                 influxClient.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);
             }
         }
-    } else if (connectmode == 0) 
-    { 
+    } else if (connectmode == 0)
+    {
         wm.disconnect(); // no wm
         readSysParamsFromStorage(); // get values from stroage
         offlineMode = 1 ; //offline mode

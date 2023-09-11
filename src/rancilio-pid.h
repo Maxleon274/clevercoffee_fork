@@ -39,7 +39,7 @@ int writeSysParamsToStorage(void);
 #define PID_TN_START_MIN 0
 #define PID_TN_START_MAX 999
 #define PID_KP_REGULAR_MIN 0
-#define PID_KP_REGULAR_MAX 200
+#define PID_KP_REGULAR_MAX 250
 #define PID_TN_REGULAR_MIN 0
 #define PID_TN_REGULAR_MAX 999
 #define PID_TV_REGULAR_MIN 0
@@ -53,7 +53,7 @@ int writeSysParamsToStorage(void);
 #define PID_TV_BD_MIN 0
 #define PID_TV_BD_MAX 999
 #define BREW_SETPOINT_MIN 20
-#define BREW_SETPOINT_MAX 110
+#define BREW_SETPOINT_MAX 150
 #define STEAM_SETPOINT_MIN 100
 #define STEAM_SETPOINT_MAX 140
 #define BREW_TEMP_OFFSET_MIN 0
