@@ -213,6 +213,10 @@ double aggbKp = AGGBKP;
 double aggbTn = AGGBTN;
 double aggbTv = AGGBTV;
 
+// Rotary Sensor
+int currentCLK;
+int previousCLK;
+
 #if aggbTn == 0
     double aggbKi = 0;
 #else
@@ -283,6 +287,7 @@ int pidMode = 1;    // 1 = Automatic, 0 = Manual
 
 double setPointTemp;
 double previousInput = 0;
+boolean temperatureSaved = true;
 
 // Variables to hold PID values (Temp input, Heater output)
 double temperature, pidOutput;
@@ -640,7 +645,7 @@ void refreshTemp() {
         #if ((PINTEMPSENSOR != 16 && defined(ESP8266)) || defined(ESP32))
             temperature = Sensor2.getTemp();
         #endif
-       
+
     #endif
       // temperature = 94;
             if (machineState != kSteam) {
@@ -1198,7 +1203,7 @@ void handleMachineState() {
 
                         break;
                     }
-                    
+
                     // 10 sec temperature above BrewSetPoint, no set new state
                     if (machinestatecoldmillis + 10 * 1000 < millis()) {
                         machineState = kBelowSetPoint;
@@ -1776,7 +1781,12 @@ void setup() {
     digitalWrite(PINVALVE, relayOFF);
     digitalWrite(PINPUMP, relayOFF);
     digitalWrite(PINHEATER, LOW);
-    
+
+    pinMode(PIN_ROTARY_CLK, INPUT);
+    pinMode(PIN_ROTARY_DT, INPUT);
+    pinMode(PIN_ROTARY_SW, INPUT);
+    previousCLK = digitalRead(PIN_ROTARY_CLK);
+
     // IF POWERSWITCH is connected
     if (POWERSWITCHTYPE > 0) {
         pinMode(PINPOWERSWITCH, INPUT);
@@ -1869,8 +1879,8 @@ void setup() {
                 influxClient.setConnectionParamsV1(INFLUXDB_URL, INFLUXDB_DB_NAME, INFLUXDB_USER, INFLUXDB_PASSWORD);
             }
         }
-    } else if (connectmode == 0) 
-    { 
+    } else if (connectmode == 0)
+    {
         wm.disconnect(); // no wm
         readSysParamsFromStorage(); // get values from stroage
         offlineMode = 1 ; //offline mode
@@ -1934,7 +1944,27 @@ void setup() {
     enableTimer1();
 }
 
+void manageRotarySensor(){
+    if(!temperatureSaved) {
+        temperatureSaved = true;
+        sysParaBrewSetPoint.setStorage();
+        storageCommit();
+    }
+    currentCLK = digitalRead(PIN_ROTARY_CLK);
+    if(currentCLK != previousCLK && temperatureSaved) {
+        if(digitalRead(PIN_ROTARY_DT) != currentCLK){
+            brewSetPoint = brewSetPoint + 0.1;
+            temperatureSaved = false;
+        } else {
+            brewSetPoint = brewSetPoint - 0.1;
+            temperatureSaved = false;
+        }
+    }
+    previousCLK = currentCLK;
+}
+
 void loop() {
+    manageRotarySensor();
 #if TOF == 1
     if (calibration_mode == 1) {
         loopcalibrate();
