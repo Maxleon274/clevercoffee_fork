@@ -3,9 +3,6 @@
  */
 
 // Pin Layout
-#define PIN_ROTARY_DT 13         // Rotary encoder data pin
-#define PIN_ROTARY_CLK 12        // Rotary encoder clock pin
-#define PIN_ROTARY_SW 99         // Rotary encoder switch
 #define PINTEMPSENSOR 2
 #define PINPRESSURESENSOR 99        // Pressure sensor 0: A0 (ESP8266), >0 ONLY ESP32
 #define PINPOWERSWITCH 99          // Input pin for powerswitch (use a pin which is LOW on startup or use an pull down resistor)
@@ -13,8 +10,11 @@
 #define PINPUMP 99
 #define PINHEATER 14
 #define PINETRIGGER 99             // PIN for E-Trigger relay
-#define PINBREWSWITCH 0           // For switch, trigger or optocoupler
-#define PINSTEAMSWITCH 99
+#define PINBREWSWITCH 16           // For switch, trigger or optocoupler
+#define PIN_ROTARY_DT 13         // Rotary encoder data pin
+#define PIN_ROTARY_CLK 12        // Rotary encoder clock pin
+#define PIN_ROTARY_SW 99         // Rotary encoder switch
+#define PINSTEAMSWITCH 17
 #define LEDPIN 99                  // LED PIN ON near setpoint
 #define OLED_SCL 5                 // Output pin for display clock pin
 #define OLED_SDA 4                 // Output pin for display data pin

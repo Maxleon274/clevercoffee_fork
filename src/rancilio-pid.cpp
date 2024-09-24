@@ -1086,7 +1086,7 @@ void handleETrigger() {
 void checkSteamON() {
     // check digital GIPO
     if (digitalRead(PINSTEAMSWITCH) == HIGH) {
-        steamON = 1;
+        steamON = 0;
     }
 
     // if activated via web interface then steamFirstON == 1, prevent override
@@ -1125,7 +1125,7 @@ void setEmergencyStopTemp() {
 void initSteamQM() {
     // Initialize monitoring for steam switch off for QuickMill thermoblock
     lastTimePVSwasON = millis();  // time when PINBREWSWITCH changes from ON to OFF
-    steamQM_active = true;
+    steamQM_active = false;
     timePVStoON = 0;
     steamON = 1;
 }

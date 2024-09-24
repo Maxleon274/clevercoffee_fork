@@ -44,7 +44,7 @@ enum MACHINE {
 #define LANGUAGE 0                 // LANGUAGE = 0 (DE), LANGUAGE = 1 (EN), LANGUAGE = 2 (ES)
 
 // Connectivity
-#define CONNECTMODE 1              // 0 = offline 1 = WIFI-MODE
+#define CONNECTMODE 0              // 0 = offline 1 = WIFI-MODE
 #define HOSTNAME "quickmill"
 #define PASS "CleverCoffee"        // default password for WiFiManager
 #define MAXWIFIRECONNECTS 5        // maximum number of reconnection attempts, use -1 to deactivate
