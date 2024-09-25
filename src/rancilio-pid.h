@@ -18,15 +18,15 @@ int writeSysParamsToStorage(void);
 #define TEMPOFFSET 0               // brew temperature setpoint
 #define STEAMSETPOINT 120          // steam temperature setpoint
 #define BREWSENSITIVITY 120        // brew detection sensitivity, be careful: if too low, then there is the risk of wrong brew detection and rising temperature
-#define AGGKP 62                   // PID Kp (regular phase)
-#define AGGTN 52                   // PID Tn (regular phase)
-#define AGGTV 11.5                 // PID Tv (regular phase)
-#define AGGIMAX 55                 // PID Integrator Max (regular phase)
-#define STARTKP 45                 // PID Kp (coldstart phase)
-#define STARTTN 130                // PID Tn (coldstart phase)
+#define AGGKP 127                   // PID Kp (regular phase)
+#define AGGTN 60                   // PID Tn (regular phase)
+#define AGGTV 28                 // PID Tv (regular phase)
+#define AGGIMAX 150                 // PID Integrator Max (regular phase)
+#define STARTKP 180                 // PID Kp (coldstart phase)
+#define STARTTN 67                // PID Tn (coldstart phase)
 #define STEAMKP 150                // PID kp (steam phase)
-#define AGGBKP 50                  // PID Kp (brew detection phase)
-#define AGGBTN 0                   // PID Tn (brew detection phase)
+#define AGGBKP 200                  // PID Kp (brew detection phase)
+#define AGGBTN 67                   // PID Tn (brew detection phase)
 #define AGGBTV 20                  // PID Tv (brew detection phase)
 #define BREW_TIME 25               // brew time in seconds (only used if pump is being controlled)
 #define BREW_SW_TIME 25            // keep brew PID params for this many seconds after detection (only for software BD)
