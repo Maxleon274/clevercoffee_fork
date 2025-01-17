@@ -1,7 +1,7 @@
 /**
  * @file    userConfig.h
  * @brief   Values must be configured by the user
- * @version 3.2.0 Master
+ * @version 3.3.0 Master
  *
  */
 #ifndef _userConfig_H
@@ -9,9 +9,9 @@
 
 // firmware version (must match with definitions in the main source file)
 #define USR_FW_VERSION    3
-#define USR_FW_SUBVERSION 2
+#define USR_FW_SUBVERSION 3
 #define USR_FW_HOTFIX     0
-#define USR_FW_BRANCH     "ESP8222-MASTER"
+#define USR_FW_BRANCH     "ESP8266-MASTER"
 
 // List of supported machines
 enum MACHINE {
@@ -44,14 +44,15 @@ enum MACHINE {
 #define LANGUAGE 0                 // LANGUAGE = 0 (DE), LANGUAGE = 1 (EN), LANGUAGE = 2 (ES)
 
 // Connectivity
-#define CONNECTMODE 0              // 0 = offline 1 = WIFI-MODE
-#define HOSTNAME "quickmill"
-#define PASS "CleverCoffee"        // default password for WiFiManager
+#define CONNECTMODE 1              // 0 = offline 1 = WIFI-MODE
+#define HOSTNAME "silvia"
+#define WIFI_SSID "yourSSID"       // SSID of your WiFi network
+#define WIFI_PASS "yourWiFiPass"   // WPA key to your WiFi network
 #define MAXWIFIRECONNECTS 5        // maximum number of reconnection attempts, use -1 to deactivate
 #define WIFICONNECTIONDELAY 10000  // delay between reconnects in ms
 
 // PID & Hardware
-#define ONLYPID 1                  // 1 = Only PID, 0 = PID and preinfusion
+#define ONLYPID 1                  // 0 = PID and preinfusion, 1 = Only PID
 #define ONLYPIDSCALE 0             // 0 = off , 1 = OnlyPID with Scale
 #define BREWMODE 1                 // 1 = Brew by time (with preinfusion); 2 = Brew by weight (from scale)
 #define BREWDETECTION 3            // 0 = off, 1 = Software (Onlypid 1), 2 = Hardware (Onlypid 0), 3 = Sensor/Hardware for Only PID
@@ -60,8 +61,8 @@ enum MACHINE {
 #define TRIGGERTYPE HIGH           // LOW = low trigger, HIGH = high trigger relay
 #define VOLTAGESENSORTYPE LOW     // BREWDETECTION 3 configuration
 #define PINMODEVOLTAGESENSOR INPUT // Mode INPUT_PULLUP, INPUT or INPUT_PULLDOWN_16 (Only Pin 16)
-#define PRESSURESENSOR 0           // 1 = pressure sensor connected to A0; PINBREWSWITCH must be set to the connected input!
-#define TEMPLED 0                  // set led pin high when brew or steam set point is within range
+#define PRESSURESENSOR 0           // 0 = no pressure sensor connected, 1 = pressure sensor connected to A0
+#define TEMPLED 0                  // 0 = no LED connected, 1 = set led pin high when brew or steam set point is within range; (esp8266: define you LEDPIN in esp8266nodemcuv2.h)
 
 // TOF sensor for water level
 #define TOF 0                      // 0 = no TOF sensor connected; 1 = water level by TOF sensor

@@ -3,12 +3,12 @@
  *
  * @brief Main sketch
  *
- * @version 3.2.0 Master
+ * @version 3.3.0 Master
  */
 
 // Firmware version
 #define FW_VERSION    3
-#define FW_SUBVERSION 2
+#define FW_SUBVERSION 3
 #define FW_HOTFIX     0
 
 #define FW_BRANCH     "ESP8222-MASTER"
@@ -24,7 +24,7 @@
 #if TEMPSENSOR == 1
     #include <DallasTemperature.h>  // Library for dallas temp sensor
 #endif
-#include <WiFiManager.h>
+
 #include <InfluxDbClient.h>
 #include <PubSubClient.h>
 #include <U8g2lib.h>            // i2c display
@@ -121,11 +121,11 @@ double percentage;
 #endif
 
 // WiFi
-WiFiManager wm;
 const unsigned long wifiConnectionDelay = WIFICONNECTIONDELAY;
 const unsigned int maxWifiReconnects = MAXWIFIRECONNECTS;
 const char *hostname = HOSTNAME;
-const char *pass = PASS;
+const char *ssid = WIFI_SSID;
+const char *pass = WIFI_PASS;
 unsigned long lastWifiConnectionAttempt = millis();
 unsigned int wifiReconnects = 0;  // actual number of reconnects
 
@@ -720,8 +720,8 @@ void checkWifi() {
                     #endif
                 }
 
-                wm.disconnect();
-                wm.autoConnect();
+                WiFi.disconnect();
+                WiFi.begin(ssid, pass);
 
                 int count = 1;
 
@@ -796,6 +796,7 @@ void checkMQTT() {
             debugPrintf("Attempting MQTT reconnection: %i\n", MQTTReCnctCount);
 
             if (mqtt.connect(hostname, mqtt_username, mqtt_password, topic_will, 0, 0, "offline") == true) {
+                MQTTReCnctCount = 0;
                 mqtt.subscribe(topic_set);
                 debugPrintln("Subscribe to MQTT Topics");
             }   // Try to reconnect to the server; connect() is a blocking
@@ -1593,15 +1594,32 @@ void tempLed() {
  * @brief Set up internal WiFi hardware
  */
 void wiFiSetup() {
-    wm.setCleanConnect(true);
-    wm.setConfigPortalTimeout(60); // sec Timeout for Portal
-    wm.setConnectTimeout(10); // Try 10 sec to connect to WLAN, 5 sec too short!
-    wm.setBreakAfterConfig(true);
-    wm.setConnectRetries(3);
-    //wm.setWiFiAutoReconnect(true);
-    wm.setHostname(hostname);
+    unsigned long started = millis();
 
-    if (wm.autoConnect(hostname, pass)) {
+    #if defined(ESP8266)
+        WiFi.hostname(hostname);
+    #endif
+
+    /* Explicitly set the ESP8266 to be a WiFi client, otherwise it would
+     * try to act as both a client and an access-point by default and could
+     * cause network-issues with the other devices on your WiFi network
+     */
+    WiFi.mode(WIFI_STA);
+    WiFi.persistent(false);
+    WiFi.begin(ssid, pass);
+
+    #if defined(ESP32)
+        WiFi.setHostname(hostname);
+    #endif
+
+    // Wait up to 20 seconds for connection:
+    while ((WiFi.status() != WL_CONNECTED) && (millis() - started < 20000)) {
+        yield();  // Prevent Watchdog trigger
+    }
+
+    checkWifi();
+
+    if (WiFi.status() == WL_CONNECTED) {
         debugPrintf("WiFi connected - IP = %i.%i.%i.%i\n", WiFi.localIP()[0],
                     WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
 
@@ -1623,17 +1641,15 @@ void wiFiSetup() {
             displayLogo(langstring_nowifi[0], langstring_nowifi[1]);
         #endif
 
-        wm.disconnect();
+        WiFi.disconnect();
         delay(1000);
 
         offlineMode = 1;
     }
 
     #if OLED_DISPLAY != 0
-        displayLogo(langstring_connectwifi1, wm.getWiFiSSID(true));
+        displayLogo(langstring_connectwifi1, WiFi.SSID());
     #endif
-
-    startRemoteSerialServer();
 }
 
 
@@ -1805,7 +1821,7 @@ void setup() {
     }
 
     // IF PINBREWSWITCH & Steam selected
-    if (PINBREWSWITCH > 0) {
+    if (PINBREWSWITCH > 0 && BREWDETECTION != 3) {
         #if (defined(ESP8266) && PINBREWSWITCH == 16)
             pinMode(PINBREWSWITCH, INPUT_PULLDOWN_16);
         #endif
@@ -1881,10 +1897,10 @@ void setup() {
         }
     } else if (connectmode == 0)
     {
-        wm.disconnect(); // no wm
-        readSysParamsFromStorage(); // get values from stroage
-        offlineMode = 1 ; //offline mode
-        pidON = 1  ; //pid on
+        WiFi.disconnect();
+        readSysParamsFromStorage();
+        offlineMode = 1;
+        pidON = 1;
     }
 
     // Initialize PID controller
@@ -1975,7 +1991,6 @@ void loop() {
     looppid();
 #endif
 
-    checkForRemoteSerialClients();
 }
 
 #if TOF == 1
